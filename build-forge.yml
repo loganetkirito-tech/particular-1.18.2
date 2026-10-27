@@ -1,0 +1,67 @@
+name: Build Particular Water FX Forge 1.18.2
+on:
+  workflow_dispatch:
+  push:
+    branches: [main, master]
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 45
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v4
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Install Gradle 7.6.1
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '7.6.1'
+      - name: Build and reobfuscate Forge mod
+        run: |
+          set -euo pipefail
+          echo 'Checking tracked Java sources:'
+          find src/main/java -type f -name '*.java' -print
+          if grep -R -nE 'package xyz\.bonfiremc\.windy|^import xyz\.bonfiremc\.windy' src/main/java; then
+            echo 'ERROR: Windy Java sources were left inside Particular project.'
+            exit 1
+          fi
+          gradle --no-daemon --stacktrace clean build
+      - name: Verify built JAR contains no Windy classes
+        run: |
+          set -euo pipefail
+          python3 - <<'PY_CHECK'
+          import glob, zipfile, sys
+          jars = glob.glob('build/libs/*.jar')
+          if len(jars) != 1:
+              sys.exit(f'Expected exactly one built JAR, found: {jars}')
+          with zipfile.ZipFile(jars[0]) as archive:
+              entries = archive.namelist()
+          foreign = [name for name in entries if name.startswith('xyz/bonfiremc/windy/') or name.startswith('fr/community/cosycritters/')]
+          if foreign:
+              sys.exit('Unexpected foreign classes in Particular JAR: ' + ', '.join(foreign[:20]))
+          own = [name for name in entries if name.startswith('org/community/particular/') and name.endswith('.class')]
+          if not own:
+              sys.exit('No Particular class files inside built JAR')
+          print('Validated isolated Particular JAR:', jars[0], 'with', len(own), 'own classes')
+          PY_CHECK
+      - name: Upload mod jar
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Particular-Water-Forge-1.18.2
+          path: build/libs/*.jar
+          if-no-files-found: error
+      - name: Upload error logs (if build failed)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-error-reports
+          path: |
+            build/reports/**
+            build/tmp/**/logs/**
+          if-no-files-found: ignore
