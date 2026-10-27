@@ -1,0 +1,22 @@
+PARTICULAR WATER — CLEAN REBUILD / package conflict fix
+
+Cause confirmée par le journal: le JAR particulier exporte aussi xyz.bonfiremc.windy.
+La source fournie ici NE contient PAS de code Windy. Le problème vient probablement
+de fichiers anciens laissés dans le dépôt GitHub, ou du mauvais JAR téléchargé.
+
+IMPORTANT: n’ajoute PAS les nouveaux fichiers par-dessus un ancien projet Windy
+sans supprimer les sources restantes.
+
+Sur GitHub, nettoie le dépôt:
+1) Supprime entièrement le dossier src/main/java ancien (particulièrement xyz/bonfiremc/windy).
+2) Supprime tout ancien contenu src/main/resources du projet Windy.
+3) Supprime les anciens dossiers build/ et .gradle/ s'ils sont versionnés.
+4) Importe UNIQUEMENT ce projet Particular, en gardant src/main/java/org/community/particular/.
+5) Relance GitHub Actions. Le workflow fait clean build + examine le JAR final.
+6) Télécharge le nouvel artifact; retire l'ancien particular-water-*.jar de mods.
+
+Pour contrôler manuellement le JAR sur Windows: ouvre-le avec 7-Zip; il ne doit
+PAS contenir xyz/bonfiremc/windy/. En revanche, Windy doit garder ce package.
+
+Cosy Critters peut avoir le même problème si compilé sur le même dépôt sans
+supprimer les anciens fichiers. Pour le moment, teste Particular seulement.

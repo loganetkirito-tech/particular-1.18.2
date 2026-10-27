@@ -1,0 +1,21 @@
+modLoader="javafml"
+loaderVersion="[40,)"
+license="LGPL-3.0-or-later"
+[[mods]]
+modId="particularwater1182"
+version="0.1.0-alpha"
+displayName="Particular Water FX 1.18.2 (experimental port)"
+authors="Community adaptation; Particular original by Leclowndu93150 and Chai"
+description="Experimental partial port of Particular water particle textures/effects."
+[[dependencies.particularwater1182]]
+modId="forge"
+mandatory=true
+versionRange="[40.0,)"
+ordering="NONE"
+side="CLIENT"
+[[dependencies.particularwater1182]]
+modId="minecraft"
+mandatory=true
+versionRange="[1.18.2,1.18.3)"
+ordering="NONE"
+side="CLIENT"

@@ -1,0 +1,1 @@
+Version de test partielle, PAS Particular complet : effets d’eau expérimentaux (ondulations, éclaboussures à l’entrée d’entités dans l’eau, mousse, légère pulvérisation). Textures originales incluses. Ne comporte pas les 27 Mixins ni les effets 3D originaux. Code non compilé/testé en jeu ici. Extraire à la racine du dépôt GitHub, compiler avec Actions et tester sur Forge 1.18.2.
